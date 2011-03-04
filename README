@@ -1,0 +1,13 @@
+This project is a collaboration around http://pkedu.fbt.wur.nl/~koos/jQueryTextAnnotator/ where Koos is trying to integratie with Drupal.
+
+The first goal is to grasp features as in "is this possible with features"
+
+When a stable module exists the module will probably get part of http://drupal.org/project/annotate which is related to but not as cool as this yellow marker stuff aka text annotator.
+
+As features are depending on modules here a short list of modules needed.
+
+1. cck providing nodereference
+2. features
+3. views
+4. views_datasource provinding views_json
+
