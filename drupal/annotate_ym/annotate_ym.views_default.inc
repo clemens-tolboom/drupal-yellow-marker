@@ -44,13 +44,44 @@ function annotate_ym_views_default_views() {
       'link_to_user' => 1,
       'overwrite_anonymous' => 0,
       'anonymous_text' => '',
-      'exclude' => 1,
+      'exclude' => 0,
       'id' => 'name',
       'table' => 'users',
       'field' => 'name',
       'override' => array(
         'button' => 'Override',
       ),
+      'relationship' => 'none',
+    ),
+    'created' => array(
+      'label' => 'Post date',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'link_class' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'target' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'html' => 0,
+        'strip_tags' => 0,
+      ),
+      'empty' => '',
+      'hide_empty' => 0,
+      'empty_zero' => 0,
+      'date_format' => 'time ago',
+      'custom_date_format' => '',
+      'exclude' => 0,
+      'id' => 'created',
+      'table' => 'node',
+      'field' => 'created',
       'relationship' => 'none',
     ),
     'title' => array(
@@ -112,37 +143,6 @@ function annotate_ym_views_default_views() {
       'field' => 'body',
       'relationship' => 'none',
     ),
-    'created' => array(
-      'label' => 'Post date',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'link_class' => '',
-        'alt' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'date_format' => 'time ago',
-      'custom_date_format' => '',
-      'exclude' => 0,
-      'id' => 'created',
-      'table' => 'node',
-      'field' => 'created',
-      'relationship' => 'none',
-    ),
     'delete_node' => array(
       'label' => 'Delete',
       'alter' => array(
@@ -194,6 +194,14 @@ function annotate_ym_views_default_views() {
       'field' => 'field_annotate_ym_dom_end_value',
       'relationship' => 'none',
     ),
+    'created' => array(
+      'order' => 'DESC',
+      'granularity' => 'second',
+      'id' => 'created',
+      'table' => 'node',
+      'field' => 'created',
+      'relationship' => 'none',
+    ),
   ));
   $handler->override_option('arguments', array(
     'field_annotate_ym_dom_noderef_nid' => array(
@@ -243,28 +251,37 @@ function annotate_ym_views_default_views() {
   $handler->override_option('cache', array(
     'type' => 'none',
   ));
-  $handler->override_option('title', 'New annotation');
+  $handler->override_option('title', 'Annotations');
   $handler->override_option('style_plugin', 'table');
   $handler->override_option('style_options', array(
-    'grouping' => 'name',
+    'grouping' => '',
     'override' => 1,
     'sticky' => 0,
     'order' => 'asc',
     'columns' => array(
       'name' => 'name',
+      'created' => 'created',
       'title' => 'title',
       'body' => 'body',
+      'delete_node' => 'delete_node',
     ),
     'info' => array(
       'name' => array(
-        'sortable' => 0,
+        'sortable' => 1,
+        'separator' => '',
+      ),
+      'created' => array(
+        'sortable' => 1,
         'separator' => '',
       ),
       'title' => array(
-        'sortable' => 0,
+        'sortable' => 1,
         'separator' => '',
       ),
       'body' => array(
+        'separator' => '',
+      ),
+      'delete_node' => array(
         'separator' => '',
       ),
     ),
@@ -433,6 +450,24 @@ function annotate_ym_views_default_views() {
       'override' => array(
         'button' => 'Use default',
       ),
+      'relationship' => 'none',
+    ),
+  ));
+  $handler->override_option('sorts', array(
+    'field_annotate_ym_dom_start_value' => array(
+      'order' => 'ASC',
+      'delta' => -1,
+      'id' => 'field_annotate_ym_dom_start_value',
+      'table' => 'node_data_field_annotate_ym_dom_start',
+      'field' => 'field_annotate_ym_dom_start_value',
+      'relationship' => 'none',
+    ),
+    'field_annotate_ym_dom_end_value' => array(
+      'order' => 'ASC',
+      'delta' => -1,
+      'id' => 'field_annotate_ym_dom_end_value',
+      'table' => 'node_data_field_annotate_ym_dom_end',
+      'field' => 'field_annotate_ym_dom_end_value',
       'relationship' => 'none',
     ),
   ));
@@ -772,6 +807,7 @@ function annotate_ym_views_default_views() {
       'validate_argument_php' => '',
     ),
   ));
+  $handler->override_option('title', 'New annotation');
   $handler->override_option('style_plugin', 'default');
   $handler->override_option('style_options', array());
   $handler->override_option('block_description', 'New annotation by node');
