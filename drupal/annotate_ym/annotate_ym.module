@@ -1,3 +1,57 @@
 <?php
 
 include_once('annotate_ym.features.inc');
+
+/**
+ * We add a menu handler for overlay nodes
+ */
+function annotate_ym_menu() {
+	// Based on rendered links we get "js/node/" . $node->nid . "/edit/nojs/go"
+	$items['js/node/%node/%'] = array(
+    'page callback' => 'annotate_ym_ajax_node',
+    'page arguments' => array(2, 3),
+    'access arguments' => array('post comments'),
+	);
+	return $items;
+}
+
+function annotate_ym_link_alter(&$links, $node, $comment = NULL) {
+  // Load the Ctools modal library and add the modal javascript.
+  ctools_include('modal');
+  ctools_modal_add_js();
+
+  // Alter the reply link so we can use the Ctools modal dialog window.
+  //$links['comment_reply']['href'] = "js/node/" . $node->nid . "/edit/nojs/go";
+  //$links['comment_reply']['attributes'] = array('class' => 'ctools-use-modal');
+}
+
+/**
+ * We are in a js context so execute
+ * 
+ * @param unknown_type $command
+ * @param unknown_type $nid
+ */
+function annotate_ym_ajax_node($node, $command) {
+	ctools_include('modal');
+  ctools_include('ajax');
+  $form_state = array(
+    'title' => t('Node'),
+    'ajax' => TRUE,
+  );
+  
+  require_once( drupal_get_path('module', 'node') . "/node.pages.inc");
+  //$node = node_load(array('nid' => 12));
+  $form_state['args'] = array($node);
+  $output = ctools_modal_form_wrapper('story_node_form', $form_state);
+  if (empty($output)) {
+    $output = array();
+    $output[] = ctools_modal_command_dismiss();
+    //ctools_ajax_command_reload();
+  	//$output[] = ctools_modal_command_display('Thank you for you comment.', '<div class="modal-message">Your edit is saved.</div>');
+    // empty $output signifies success, so we'll use it as our $commands array.
+    //$inplace = ctools_ajax_text_button(t('remain here'), 'ctools_ajax_sample/nojs/login/inplace', t('Go to your account'));
+    //$account = ctools_ajax_text_button(t('your account'), 'ctools_ajax_sample/nojs/login/user', t('Go to your account'));
+    //$output[] = ctools_modal_command_display(t('Login Success'), '<div class="modal-message">Login successful. You can now choose whether to '. $inplace .', or go to '. $account.'.</div>');
+  }
+  ctools_ajax_render($output);
+}
