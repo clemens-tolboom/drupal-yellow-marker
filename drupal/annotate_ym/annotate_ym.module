@@ -30,24 +30,19 @@ function annotate_ym_menu() {
 }
 
 function annotate_ym_init() {
- // Load the Ctools modal library and add the modal javascript.
+  // Load the Ctools modal library and add the modal javascript.
   ctools_include('modal');
   ctools_modal_add_js();
 }
 
 
-/**
- * We are in a js context so execute
- *
- * @param unknown_type $command
- * @param unknown_type $nid
- */
 function annotate_ym_ajax_node($js, $node, $command) {
-  if ($js == 'nojs') {
-    $args = arg();
-    array_shift($args);
-    drupal_goto(implode('/', $args));
+  if (!ctools_js_load($js)) {
+    drupal_goto(implode('/', array_shift(arg())));
   }
+
+  // include node file, necessary for node generation
+  module_load_include('inc', 'node', 'node.pages');
 
   if ($command == 'edit') {
     $config = array(
@@ -59,24 +54,31 @@ function annotate_ym_ajax_node($js, $node, $command) {
       'form_name' => 'node_delete_confirm',
     );
   }
-  // view and others
+  // TODO: view and others?
+  else if ($command == 'view') {
+    $config = array(
+      'content' => node_view($node, TRUE, TRUE, FALSE),
+    );
+  }
   else {
     drupal_goto();
   }
-
   ctools_include('modal');
   ctools_include('ajax');
 
-  $form_state = array(
-    'title' => t('Node'),
-    'ajax' => TRUE,
-  );
+  if ($config['form_name']) {
+    $form_state = array(
+      'title' => t('Node'),
+      'ajax' => TRUE,
+    );
+    $form_state['args'] = array($node);
+    $output = ctools_modal_form_wrapper($config['form_name'], $form_state);
+  }
+  else {
+    $output = array();
+    $output[] = ctools_modal_command_display(t('Node'), $config['content']);
+  }
 
-  // include node file, necessary for node generation
-  module_load_include('inc', 'node', 'node.pages');
-
-  $form_state['args'] = array($node);
-  $output = ctools_modal_form_wrapper($config['form_name'], $form_state);
   if (empty($output)) {
     $output = array();
     $output[] = ctools_modal_command_dismiss();
